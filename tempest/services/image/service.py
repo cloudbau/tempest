@@ -52,6 +52,7 @@ class Service(BaseService):
                     service_type='image',
                     endpoint_type='publicURL')
 
+            endpoint = endpoint.replace(r'/v1', '')
             self._client = glanceclient.Client('1',
                                                endpoint=endpoint,
                                                token=token)
