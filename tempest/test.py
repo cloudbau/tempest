@@ -51,10 +51,18 @@ def attr(*args, **kwargs):
 class BaseTestCase(testtools.TestCase,
                    testtools.testcase.WithAttributes,
                    testresources.ResourcedTestCase):
+
     def __init__(self, *args, **kwargs):
         super(BaseTestCase, self).__init__(*args, **kwargs)
         #NOTE(afazekas): inspection workaround
         BaseTestCase.config = config.TempestConfig()
+
+    @classmethod
+    def setUpClass(cls):
+        super(BaseTestCase, cls).setUpClass()
+        # Needed to run single test modules with nose.
+        if not hasattr(cls, 'config'):
+            cls.config = config.TempestConfig()
 
 
 class TestCase(BaseTestCase):
@@ -67,6 +75,7 @@ class TestCase(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
+        super(TestCase, cls).setUpClass()
         cls.manager = cls.manager_class()
         for attr_name in cls.manager.client_attr_names:
             # Ensure that pre-existing class attributes won't be
