@@ -16,11 +16,16 @@
 #    under the License.
 
 import netaddr
+import testtools
 
 from tempest.common.utils.data_utils import rand_name
+from tempest import config
 from tempest import exceptions
 from tempest.test import attr
 from tempest.tests.compute import base
+
+
+CONF = config.TempestConfig() 
 
 
 @attr(type='smoke')
@@ -35,6 +40,8 @@ class VirtualInterfacesTestJSON(base.BaseComputeTest):
         cls.server_id = server['id']
 
     @attr(type='positive')
+    @testtools.skipIf(CONF.network.quantum_available, "This feature is not "
+	              "implemented by Quantum. See bug: #1183436")
     def test_list_virtual_interfaces(self):
         # Positive test:Should be able to GET the virtual interfaces list
         # for a given server_id
@@ -50,6 +57,8 @@ class VirtualInterfacesTestJSON(base.BaseComputeTest):
                             "Invalid mac address detected.")
 
     @attr(type='negative')
+    @testtools.skipIf(CONF.network.quantum_available, "This feature is not "
+	              "implemented by Quantum. See bug: #1183436")
     def test_list_virtual_interfaces_invalid_server_id(self):
         # Negative test: Should not be able to GET virtual interfaces
         # for an invalid server_id

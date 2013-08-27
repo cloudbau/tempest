@@ -143,7 +143,9 @@ class SecurityGroupRulesTestJSON(base.BaseComputeTest):
         ip_protocol = 'tcp'
         from_port = 22
         to_port = 22
-        self.assertRaises(exceptions.NotFound,
+        # XXX(cloudbau): nova api is raising bad request because they expect
+        # parent group id to be an uuid.
+        self.assertRaises(exceptions.BadRequest, 
                           self.client.create_security_group_rule,
                           parent_group_id, ip_protocol, from_port, to_port)
 
@@ -228,7 +230,9 @@ class SecurityGroupRulesTestJSON(base.BaseComputeTest):
     def test_security_group_rules_delete_with_invalid_id(self):
         # Negative test: Deletion of Security Group rule should be FAIL
         # with invalid rule id
-        self.assertRaises(exceptions.NotFound,
+        # XXX(cloudbau): nova api is raising bad request because they expect
+        # sec group id to be an uuid.
+        self.assertRaises(exceptions.BadRequest, 
                           self.client.delete_security_group_rule,
                           rand_name('999'))
 

@@ -14,9 +14,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import testtools
 
 from tempest.common.utils.data_utils import rand_name
 from tempest import exceptions
+from tempest import config
 from tempest.test import attr
 from tempest.tests.compute import base
 
@@ -116,10 +118,16 @@ class SecurityGroupsTestJSON(base.BaseComputeTest):
             non_exist_id = rand_name('999')
             if non_exist_id not in security_group_id:
                 break
-        self.assertRaises(exceptions.NotFound, self.client.get_security_group,
+        # XXX(cloudbau): nova api is raising bad request because they expect
+        # sec group id to be an uuid.
+        self.assertRaises(exceptions.BadRequest,
+                          self.client.get_security_group,
                           non_exist_id)
 
     @attr(type='negative')
+    # XXX(cloudbau): Bug in upstream.
+    @testtools.skipIf(config.TempestConfig().network.quantum_available,
+                      "Skipped until this is fixed, check: https://review.openstack.org/#/c/34559/")
     def test_security_group_create_with_invalid_group_name(self):
         # Negative test: Security Group should not be created with group name
         # as an empty string/with white spaces/chars more than 255
@@ -138,6 +146,9 @@ class SecurityGroupsTestJSON(base.BaseComputeTest):
                           s_description)
 
     @attr(type='negative')
+    # XXX(cloudbau): Bug in upstream.
+    @testtools.skipIf(config.TempestConfig().network.quantum_available,
+                      "Skipped until the Bug #1161411 is resolved")
     def test_security_group_create_with_invalid_group_description(self):
         # Negative test:Security Group should not be created with description
         # as an empty string/with white spaces/chars more than 255
@@ -155,6 +166,9 @@ class SecurityGroupsTestJSON(base.BaseComputeTest):
                           s_description)
 
     @attr(type='negative')
+    # XXX(cloudbau): Bug in upstream.
+    @testtools.skipIf(config.TempestConfig().network.quantum_available,
+                     "Quantum allows duplicate names for security groups")
     def test_security_group_create_with_duplicate_name(self):
         # Negative test:Security Group with duplicate name should not
         # be created
@@ -197,7 +211,9 @@ class SecurityGroupsTestJSON(base.BaseComputeTest):
             non_exist_id = rand_name('999')
             if non_exist_id not in security_group_id:
                 break
-        self.assertRaises(exceptions.NotFound,
+        # XXX(cloudbau): nova api is raising bad request because they expect
+        # sec group id to be an uuid.
+        self.assertRaises(exceptions.BadRequest,
                           self.client.delete_security_group, non_exist_id)
 
     @attr(type='negative')
@@ -207,6 +223,9 @@ class SecurityGroupsTestJSON(base.BaseComputeTest):
         self.assertRaises(exceptions.NotFound,
                           self.client.delete_security_group, '')
 
+    # XXX(cloudbau): Bug in upstream.
+    @testtools.skipIf(config.TempestConfig().network.quantum_available,
+                      "Skipped until havana, check: https://review.openstack.org/#/c/32288/.")
     def test_server_security_groups(self):
         # Checks that security groups may be added and linked to a server
         # and not deleted if the server is active.

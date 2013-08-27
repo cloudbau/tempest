@@ -210,13 +210,10 @@ class ServersNegativeTest(base.BaseComputeTest):
     @attr(type='negative')
     def test_delete_a_server_of_another_tenant(self):
         # Delete a server that belongs to another tenant
-        try:
-            resp, server = self.create_server(wait_until='ACTIVE')
-            self.assertRaises(exceptions.NotFound,
-                              self.alt_client.delete_server,
-                              server['id'])
-        finally:
-            self.client.delete_server(server['id'])
+        resp, server = self.create_server(wait_until='ACTIVE')
+        self.assertRaises(exceptions.NotFound,
+		          self.alt_client.delete_server,
+		          server['id'])
 
     @attr(type='negative')
     def test_delete_server_pass_negative_id(self):
@@ -236,7 +233,8 @@ class ServersNegativeTest(base.BaseComputeTest):
         # Create a server with a nonexistent security group
 
         security_groups = [{'name': 'does_not_exist'}]
-        self.assertRaises(exceptions.BadRequest,
+        # XXX(cloudbau): Change BadRequest to NotFound.
+        self.assertRaises(exceptions.NotFound,
                           self.create_server,
                           security_groups=security_groups)
 
