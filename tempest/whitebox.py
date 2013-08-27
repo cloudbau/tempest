@@ -86,6 +86,7 @@ class ComputeWhiteboxTest(test.ComputeFuzzClientTest, WhiteboxTest):
 
     @classmethod
     def tearDownClass(cls):
+        super(ComputeWhiteboxTest, cls).tearDownClass()
         # NOTE(jaypipes): Tests often add things in a particular order
         # so we destroy resources in the reverse order in which resources
         # are added to the test class object
