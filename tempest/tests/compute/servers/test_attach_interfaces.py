@@ -12,6 +12,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import testtools
 
 from tempest import clients
 from tempest.tests.compute import base
@@ -25,10 +26,11 @@ class AttachInterfacesTestJSON(base.BaseComputeTest):
     @classmethod
     def setUpClass(cls):
         super(AttachInterfacesTestJSON, cls).setUpClass()
-        os = clients.Manager()
-        if not os.config.network.quantum_available:
+        if not cls.os.config.network.quantum_available:
             raise cls.skipException("Quantum is required")
-        cls.client = os.interfaces_client
+        # XXX(Cloudbau): Fix client to use same credentials as the one used
+        # to create the server.
+        cls.client = cls.os.interfaces_client
 
     def _check_interface(self, iface, port_id=None, network_id=None,
                          fixed_ip=None):
@@ -41,7 +43,7 @@ class AttachInterfacesTestJSON(base.BaseComputeTest):
             self.assertEqual(iface['fixed_ips'][0]['ip_address'], fixed_ip)
 
     def _create_server_get_interfaces(self):
-        server = self.create_server()
+        resp, server = self.create_server()
         self.os.servers_client.wait_for_server_status(server['id'], 'ACTIVE')
         resp, ifs = self.client.list_interfaces(server['id'])
         return server, ifs
