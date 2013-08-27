@@ -39,7 +39,8 @@ class FlavorsExtraSpecsTestJSON(base.BaseComputeAdminTest):
             raise cls.skipException(msg)
 
         cls.client = cls.os_adm.flavors_client
-        flavor_name = 'test_flavor2'
+        # XXX (cloudbau): Protect against "Instance Type with name test_flavor2 already exists."
+        flavor_name = 'test_flavor2_%s' % cls._interface
         ram = 512
         vcpus = 1
         disk = 10
