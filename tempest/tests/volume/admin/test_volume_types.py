@@ -56,8 +56,9 @@ class VolumeTypesTest(BaseVolumeTest):
             volume = {}
             vol_name = rand_name("volume-")
             vol_type_name = rand_name("volume-type-")
-            extra_specs = {"storage_protocol": "iSCSI",
-                           "vendor_name": "Open Source"}
+            extra_specs = {"storage_protocol": "Xtreemfs"}
+            # FIXME (cloudbau): Re-put when the typo is fixed. bug: https://trello.com/c/W6EUbmm5. 
+                           #"vendor_name": "OpenSource"}
             body = {}
             resp, body = self.client.create_volume_type(vol_type_name,
                                                         extra_specs=

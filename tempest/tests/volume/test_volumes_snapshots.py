@@ -12,12 +12,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import testtools
+
 from tempest.tests.volume import base
 
 
 class VolumesSnapshotTest(base.BaseVolumeTest):
     _interface = "json"
 
+    @testtools.skip("Cloudbau: Xtreemfs doesn't support creating snapshot from volume.")
     def test_volume_from_snapshot(self):
         volume_origin = self.create_volume(size=1)
         snapshot = self.create_snapshot(volume_origin['id'])
