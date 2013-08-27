@@ -391,7 +391,9 @@ class TestNetworkBasicOps(smoke.DefaultClientSmokeTest):
         return floating_ip
 
     def _ping_ip_address(self, ip_address):
-        cmd = ['ping', '-c1', '-w1', ip_address]
+        # FIXME(cloudbau): We are currently using ovs 1.4 which is known by a slow
+        # first packet latency so i am changing pings to be more pessimistic.
+        cmd = ['ping', '-c6', '-w10', ip_address]
 
         def ping():
             proc = subprocess.Popen(cmd,
@@ -400,6 +402,9 @@ class TestNetworkBasicOps(smoke.DefaultClientSmokeTest):
             proc.wait()
             if proc.returncode == 0:
                 return True
+            else:
+                LOG.debug("Ping output:\nSTDOUT: %s\nSTDERR: %s\n",
+                          proc.stdout.read(), proc.stderr.read())
 
         # TODO(mnewby) Allow configuration of execution and sleep duration.
         return test.call_until_true(ping, 20, 1)
@@ -476,8 +481,8 @@ class TestNetworkBasicOps(smoke.DefaultClientSmokeTest):
             for net_name, ip_addresses in server.networks.iteritems():
                 for ip_address in ip_addresses:
                     self.assertTrue(self._ping_ip_address(ip_address),
-                                    "Timed out waiting for %s's ip to become "
-                                    "reachable" % server.name)
+                                    "Timed out waiting for %s's ip %s to become "
+                                    "reachable" % (server.name, ip_address))
 
     def test_007_assign_floating_ips(self):
         public_network_id = self.config.network.public_network_id
@@ -497,5 +502,5 @@ class TestNetworkBasicOps(smoke.DefaultClientSmokeTest):
             for floating_ip in floating_ips:
                 ip_address = floating_ip.floating_ip_address
                 self.assertTrue(self._ping_ip_address(ip_address),
-                                "Timed out waiting for %s's ip to become "
-                                "reachable" % server.name)
+                                "Timed out waiting for %s's ip %s to become "
+                                "reachable" % (server.name, ip_address))
