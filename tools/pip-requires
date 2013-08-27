@@ -14,3 +14,8 @@ testresources
 keyring
 testrepository
 oslo.config>=1.1.0
+
+
+# Needed for whitebox test.
+sqlalchemy
+MySQL-python
