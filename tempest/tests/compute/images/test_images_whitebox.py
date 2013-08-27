@@ -32,6 +32,8 @@ class ImagesWhiteboxTest(whitebox.ComputeWhiteboxTest, base.BaseComputeTest):
         cls.client = cls.images_client
         cls.connection, cls.meta = cls.get_db_handle_and_meta()
         cls.shared_server = cls.create_server()
+        # XXX(cloudbau): Add this server to be cleanup.
+        cls.servers.append(cls.shared_server)
         cls.image_ids = []
 
     @classmethod
