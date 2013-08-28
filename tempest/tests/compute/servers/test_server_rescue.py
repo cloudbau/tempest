@@ -192,6 +192,8 @@ class ServerRescueTestJSON(base.BaseComputeTest):
         self.servers_client.wait_for_server_status(self.server_id, 'ACTIVE')
 
     @attr(type='positive')
+    @testtools.skip("Cloudbau: Skipped because VM created here is not quantum"
+    " aware.")
     def test_rescued_vm_associate_dissociate_floating_ip(self):
         # Rescue the server
         self.servers_client.rescue_server(
