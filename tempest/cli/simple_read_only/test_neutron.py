@@ -19,6 +19,7 @@ import re
 import subprocess
 
 from oslo.config import cfg
+import testtools
 
 import tempest.cli
 from tempest.openstack.common import log as logging
@@ -67,9 +68,13 @@ class SimpleReadOnlyNeutronClientTest(tempest.cli.ClientTestBase):
     def test_neutron_floatingip_list(self):
         self.neutron('floatingip-list')
 
+    @testtools.skipUnless(CONF.neutron.metering_available,
+                          "Neutron metering agent is skipped")
     def test_neutron_meter_label_list(self):
         self.neutron('meter-label-list')
 
+    @testtools.skipUnless(CONF.neutron.metering_available,
+                          "Neutron metering agent is skipped")
     def test_neutron_meter_label_rule_list(self):
         self.neutron('meter-label-rule-list')
 
