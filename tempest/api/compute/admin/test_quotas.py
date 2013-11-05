@@ -32,6 +32,7 @@ class QuotasAdminTestJSON(base.BaseComputeAdminTest):
         cls.auth_url = cls.config.identity.uri
         cls.client = cls.os.quotas_client
         cls.adm_client = cls.os_adm.quotas_client
+        cls.limit_client = cls.os.limits_client
         cls.identity_admin_client = cls._get_identity_admin_client()
         cls.sg_client = cls.security_groups_client
 
@@ -114,7 +115,9 @@ class QuotasAdminTestJSON(base.BaseComputeAdminTest):
         # Disallow server creation when tenant's vcpu quota is full
         resp, quota_set = self.client.get_quota_set(self.demo_tenant_id)
         default_vcpu_quota = quota_set['cores']
-        vcpu_quota = 0  # Set the quota to zero to conserve resources
+        tenant_limit = self.limit_client.get_absolute_limits()[1]
+        # Set the quota to used one to conserve resources.
+        vcpu_quota = tenant_limit['totalCoresUsed']
 
         resp, quota_set = self.adm_client.update_quota_set(self.demo_tenant_id,
                                                            force=True,
@@ -129,7 +132,9 @@ class QuotasAdminTestJSON(base.BaseComputeAdminTest):
         # Disallow server creation when tenant's memory quota is full
         resp, quota_set = self.client.get_quota_set(self.demo_tenant_id)
         default_mem_quota = quota_set['ram']
-        mem_quota = 0  # Set the quota to zero to conserve resources
+        tenant_limit = self.limit_client.get_absolute_limits()[1]
+        # Set the quota to used one to conserve resources.
+        mem_quota = tenant_limit['totalRAMUsed']
 
         self.adm_client.update_quota_set(self.demo_tenant_id,
                                          force=True,
@@ -151,7 +156,9 @@ class QuotasAdminTestJSON(base.BaseComputeAdminTest):
         # Once instances quota limit is reached, disallow server creation
         resp, quota_set = self.client.get_quota_set(self.demo_tenant_id)
         default_instances_quota = quota_set['instances']
-        instances_quota = 0  # Set quota to zero to disallow server creation
+        tenant_limit = self.limit_client.get_absolute_limits()[1]
+        # Set the quota to used one to conserve resources.
+        instances_quota = tenant_limit['totalInstancesUsed']
 
         self.adm_client.update_quota_set(self.demo_tenant_id,
                                          force=True,
@@ -168,7 +175,7 @@ class QuotasAdminTestJSON(base.BaseComputeAdminTest):
 
         resp, quota_set = self.client.get_quota_set(self.demo_tenant_id)
         default_sg_quota = quota_set['security_groups']
-        sg_quota = 0  # Set the quota to zero to conserve resources
+        sg_quota = 0  # Set the quota to zero to conserve resources 
 
         resp, quota_set =\
             self.adm_client.update_quota_set(self.demo_tenant_id,
