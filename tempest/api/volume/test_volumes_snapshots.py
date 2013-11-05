@@ -26,6 +26,11 @@ class VolumesSnapshotTest(base.BaseVolumeTest):
     @classmethod
     def setUpClass(cls):
         super(VolumesSnapshotTest, cls).setUpClass()
+        # FIXME(Cloudbau): Fix when xtreemfs driver is enhanced.
+	raise cls.skipException(
+            "%s skipped because xtreemfs doesn't support snapshots" %
+             cls.__name__
+        )
         try:
             cls.volume_origin = cls.create_volume()
         except Exception:

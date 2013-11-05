@@ -15,6 +15,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import testtools
+
 from tempest.api.volume import base
 from tempest.common.utils.data_utils import rand_name
 from tempest.test import attr
@@ -139,11 +141,17 @@ class VolumesGetTest(base.BaseVolumeTest):
 
     @attr(type='smoke')
     @services('image')
+    # FIXME (Cloudbau): Remove when xtreemfs driver is enhanced.
+    @testtools.skipIf(True,
+                      "Xtreemfs doesn't support creating volume from image")
     def test_volume_create_get_update_delete_from_image(self):
         self._volume_create_get_update_delete(imageRef=self.
                                               config.compute.image_ref)
 
     @attr(type='gate')
+    # FIXME (Cloudbau): Remove when xtreemfs driver is enhanced.
+    @testtools.skipIf(True, 
+                      "Xtreemfs doesn't support creating volume from snaphot")
     def test_volume_create_get_update_delete_as_clone(self):
         origin = self.create_volume(size=1,
                                     display_name="Volume Origin")
