@@ -37,6 +37,9 @@ class VPNaaSJSON(base.BaseNetworkTest):
     @classmethod
     def setUpClass(cls):
         super(VPNaaSJSON, cls).setUpClass()
+        if not cls.config.neutron.vpnaas_available:
+            msg = ("%s skipped as vpnaas agent is not available" % cls.__name__)
+            raise cls.skipException(msg)
         cls.network = cls.create_network()
         cls.subnet = cls.create_subnet(cls.network)
         cls.router = cls.create_router(rand_name("router-"))

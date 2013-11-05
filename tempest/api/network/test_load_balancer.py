@@ -42,6 +42,9 @@ class LoadBalancerJSON(base.BaseNetworkTest):
     @classmethod
     def setUpClass(cls):
         super(LoadBalancerJSON, cls).setUpClass()
+        if not cls.config.neutron.lbaas_available:
+            msg = ("%s skipped as lbaas agent is not available" % cls.__name__)
+            raise cls.skipException(msg)
         cls.network = cls.create_network()
         cls.name = cls.network['name']
         cls.subnet = cls.create_subnet(cls.network)

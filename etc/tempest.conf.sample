@@ -237,6 +237,9 @@ public_network_id = {$PUBLIC_NETWORK_ID}
 # for each tenant to have their own router.
 public_router_id = {$PUBLIC_ROUTER_ID}
 
+[neutron]
+lbaas_available = False
+vpnaas_available = False
 
 [volume]
 # This section contains the configuration options used when executing tests

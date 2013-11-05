@@ -297,6 +297,22 @@ NetworkGroup = [
                     "connectivity"),
 ]
 
+
+neutron_group = cfg.OptGroup(name='neutron',
+                             title='Neutron Service Specific Options')
+
+NeutronGroup = [
+    cfg.BoolOpt('lbaas_available',
+                default=True,
+                help="Whether lbaas agent is configured and running."),
+    cfg.BoolOpt('vpnaas_available',
+                default=True,
+                help="Whether vpnaas agent is configured and running."),
+    cfg.BoolOpt('metering_available',
+                default=True,
+                help="Whether metering agent is configured and running."),
+]
+
 volume_group = cfg.OptGroup(name='volume',
                             title='Block Storage Options')
 
@@ -614,6 +630,7 @@ class TempestConfig:
         register_opt_group(cfg.CONF, identity_group, IdentityGroup)
         register_opt_group(cfg.CONF, image_group, ImageGroup)
         register_opt_group(cfg.CONF, network_group, NetworkGroup)
+        register_opt_group(cfg.CONF, neutron_group, NeutronGroup)
         register_opt_group(cfg.CONF, volume_group, VolumeGroup)
         register_opt_group(cfg.CONF, object_storage_group, ObjectStoreGroup)
         register_opt_group(cfg.CONF, orchestration_group, OrchestrationGroup)
@@ -629,6 +646,7 @@ class TempestConfig:
         self.identity = cfg.CONF.identity
         self.images = cfg.CONF.image
         self.network = cfg.CONF.network
+        self.neutron = cfg.CONF.neutron
         self.volume = cfg.CONF.volume
         self.object_storage = cfg.CONF['object-storage']
         self.orchestration = cfg.CONF.orchestration
