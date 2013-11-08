@@ -20,8 +20,6 @@ from neutronclient.common import exceptions as exc
 from tempest.scenario.manager import NetworkScenarioTest
 from tempest.test import services
 
-MAX_REASONABLE_ITERATIONS = 51  # more than enough. Default for port is 50.
-
 
 class TestNetworkQuotaBasic(NetworkScenarioTest):
     """
@@ -45,8 +43,8 @@ class TestNetworkQuotaBasic(NetworkScenarioTest):
 
     @services('network')
     def test_create_network_until_quota_hit(self):
-        hit_limit = False
-        for n in xrange(MAX_REASONABLE_ITERATIONS):
+        quota_set = self.network_client.show_quota(self.tenant_id)
+        for n in xrange(quota_set['quota']['network'] + 1):
             try:
                 self.networks.append(
                     self._create_network(self.tenant_id,
@@ -54,9 +52,9 @@ class TestNetworkQuotaBasic(NetworkScenarioTest):
             except exc.NeutronClientException as e:
                 if (e.status_code != 409):
                     raise
-                hit_limit = True
                 break
-        self.assertTrue(hit_limit, "Failed: Did not hit quota limit !")
+        else:
+            raise AssertionError("Failed: Did not hit quota limit !")
 
     @services('network')
     def test_create_subnet_until_quota_hit(self):
@@ -64,8 +62,8 @@ class TestNetworkQuotaBasic(NetworkScenarioTest):
             self.networks.append(
                 self._create_network(self.tenant_id,
                                      namestart='network-quotatest-'))
-        hit_limit = False
-        for n in xrange(MAX_REASONABLE_ITERATIONS):
+        quota_set = self.network_client.show_quota(self.tenant_id)
+        for n in xrange(quota_set['quota']['subnet'] + 1):
             try:
                 self.subnets.append(
                     self._create_subnet(self.networks[0],
@@ -73,9 +71,9 @@ class TestNetworkQuotaBasic(NetworkScenarioTest):
             except exc.NeutronClientException as e:
                 if (e.status_code != 409):
                     raise
-                hit_limit = True
                 break
-        self.assertTrue(hit_limit, "Failed: Did not hit quota limit !")
+        else:
+            raise AssertionError("Failed: Did not hit quota limit !")
 
     @services('network')
     def test_create_ports_until_quota_hit(self):
@@ -83,8 +81,8 @@ class TestNetworkQuotaBasic(NetworkScenarioTest):
             self.networks.append(
                 self._create_network(self.tenant_id,
                                      namestart='network-quotatest-'))
-        hit_limit = False
-        for n in xrange(MAX_REASONABLE_ITERATIONS):
+        quota_set = self.network_client.show_quota(self.tenant_id)
+        for n in xrange(quota_set['quota']['port'] + 1):
             try:
                 self.ports.append(
                     self._create_port(self.networks[0],
@@ -92,6 +90,6 @@ class TestNetworkQuotaBasic(NetworkScenarioTest):
             except exc.NeutronClientException as e:
                 if (e.status_code != 409):
                     raise
-                hit_limit = True
                 break
-        self.assertTrue(hit_limit, "Failed: Did not hit quota limit !")
+        else:
+            raise AssertionError("Failed: Did not hit quota limit !")
