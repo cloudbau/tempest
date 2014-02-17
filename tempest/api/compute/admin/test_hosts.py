@@ -78,13 +78,14 @@ class HostsAdminTestJSON(base.BaseComputeAdminTest):
     def test_show_host_detail(self):
         resp, hosts = self.client.list_hosts()
         self.assertEqual(200, resp.status)
-   
+
         hosts = [host for host in hosts if host['service'] == 'compute']
         self.assertTrue(len(hosts) >= 1)
- 
         for host in hosts:
             hostname = host['host_name']
 
+        for host in hosts:
+            hostname = host['host_name']
             resp, resources = self.client.show_host_detail(hostname)
             self.assertEqual(200, resp.status)
             self.assertTrue(len(resources) >= 1)
