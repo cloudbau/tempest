@@ -52,9 +52,6 @@ class EC2VolumesTest(BotoTestCase):
         self.client.delete_volume(volume.id)
         self.cancelResourceCleanUp(cuk)
 
-    # FIXME (Cloudbau): Remove when xtreemfs driver is enhanced. 
-    @testtools.skipIf(True, 
-                      "Xtreemfs doesn't support creating volume from snapshot") 
     @attr(type='smoke')
     def test_create_volume_from_snapshot(self):
         # EC2 Create volume from snapshot

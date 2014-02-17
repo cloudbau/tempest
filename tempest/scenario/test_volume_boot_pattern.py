@@ -35,11 +35,6 @@ class TestVolumeBootPattern(manager.OfficialClientTest):
     @classmethod
     def setUpClass(cls):
         super(TestVolumeBootPattern, cls).setUpClass()
-        # FIXME(Cloudbau): Fix when xtreemfs driver is enhanced.
-	raise cls.skipException(
-            "%s skipped because xtreemfs doesn't support snapshots" %
-             cls.__name__
-        )
 
     def _create_volume_from_image(self):
         img_uuid = self.config.compute.image_ref
