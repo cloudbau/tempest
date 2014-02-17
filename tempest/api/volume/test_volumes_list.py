@@ -15,6 +15,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import operator
 
 from tempest.api.volume import base
 from tempest.common.utils.data_utils import rand_int_id
@@ -23,6 +24,8 @@ from tempest.openstack.common import log as logging
 from tempest.test import attr
 
 LOG = logging.getLogger(__name__)
+
+VOLUME_FIELDS = ('id', 'display_name')
 
 
 class VolumesListTest(base.BaseVolumeTest):
@@ -37,7 +40,11 @@ class VolumesListTest(base.BaseVolumeTest):
 
     _interface = 'json'
 
-    def assertVolumesIn(self, fetched_list, expected_list):
+    def assertVolumesIn(self, fetched_list, expected_list, fields=None):
+        if fields:
+            expected_list = map(operator.itemgetter(*fields), expected_list)
+            fetched_list = map(operator.itemgetter(*fields), fetched_list)
+
         missing_vols = [v for v in expected_list if v not in fetched_list]
         if len(missing_vols) == 0:
             return
@@ -95,7 +102,8 @@ class VolumesListTest(base.BaseVolumeTest):
         # Fetch all volumes
         resp, fetched_list = self.client.list_volumes()
         self.assertEqual(200, resp.status)
-        self.assertVolumesIn(fetched_list, self.volume_list)
+        self.assertVolumesIn(fetched_list, self.volume_list,
+                             fields=VOLUME_FIELDS)
 
     @attr(type='gate')
     def test_volume_list_with_details(self):
@@ -132,7 +140,8 @@ class VolumesListTest(base.BaseVolumeTest):
         self.assertEqual(200, resp.status)
         for volume in fetched_list:
             self.assertEqual('available', volume['status'])
-        self.assertVolumesIn(fetched_list, self.volume_list)
+        self.assertVolumesIn(fetched_list, self.volume_list,
+                             fields=VOLUME_FIELDS)
 
     @attr(type='gate')
     def test_volumes_list_details_by_status(self):
@@ -152,7 +161,8 @@ class VolumesListTest(base.BaseVolumeTest):
         self.assertEqual(200, resp.status)
         for volume in fetched_list:
             self.assertEqual(zone, volume['availability_zone'])
-        self.assertVolumesIn(fetched_list, self.volume_list)
+        self.assertVolumesIn(fetched_list, self.volume_list,
+                             fields=VOLUME_FIELDS)
 
     @attr(type='gate')
     def test_volumes_list_details_by_availability_zone(self):
