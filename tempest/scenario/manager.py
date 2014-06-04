@@ -285,6 +285,7 @@ class OfficialClientTest(tempest.test.BaseTestCase):
         for ruleset in rulesets:
             sg_rule = client.security_group_rules.create(secgroup_id,
                                                          **ruleset)
+            self.addCleanup(client.security_group_rules.delete, sg_rule)
             rules.append(sg_rule)
         return rules
 
